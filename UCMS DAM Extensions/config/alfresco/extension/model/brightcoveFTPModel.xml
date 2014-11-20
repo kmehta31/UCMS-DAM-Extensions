@@ -1,0 +1,68 @@
+<model name="brightcoveFTP:publishingmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Alfresco BrightcoveFTP Publishing Content Model</description>
+	<author>Kalpesh</author>
+	<published>2012-07-02</published>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/publishing/1.0" prefix="pub" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.alfresco.org/model/publishing/brightcove/ftp/1.0" prefix="brightcoveFTP" />
+	</namespaces>
+
+	<types>
+		<type name="brightcoveFTP:DeliveryChannel">
+			<title>Brightcove FTP Delivery Channel</title>
+			<description>Node type used to represent Brightcove FTP delivery channel</description>
+			<parent>pub:DeliveryChannel</parent>
+			<mandatory-aspects>
+				<aspect>brightcoveFTP:DeliveryChannelAspect</aspect>
+			</mandatory-aspects>
+		</type>
+	</types>
+
+	<aspects>
+		<aspect name="brightcoveFTP:DeliveryChannelAspect">
+			<title>Brightcove FTP Delivery Channel Aspect</title>
+			<description>Applied to a node that represents a Brightcove delivery channel</description>
+			<properties>
+				<property name="brightcoveFTP:server">
+					<title>FTP Server</title>
+					<type>d:text</type>
+				</property>
+				<property name="brightcoveFTP:port">
+					<title>FTP Port</title>
+					<type>d:int</type>
+				</property>
+				<property name="brightcoveFTP:publisherID">
+					<title>Publisher ID</title>
+					<type>d:text</type>
+				</property>
+				<property name="brightcoveFTP:preparer">
+					<title>Prepared By</title>
+					<type>d:text</type>
+					<default>system</default>
+				</property>
+				<property name="brightcoveFTP:email">
+					<title>Email to Notify</title>
+					<type>d:text</type>
+				</property>
+				<property name="brightcoveFTP:callbackURL">
+					<title>Callback Entity URL</title>
+					<type>d:text</type>
+				</property>
+				<property name="brightcoveFTP:reportSuccess">
+					<title>Notify on success?</title>
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+</model>

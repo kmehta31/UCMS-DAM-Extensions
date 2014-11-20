@@ -1,0 +1,496 @@
+<alfresco-config>
+	<!-- Repository Library config section -->
+	<config evaluator="string-compare" condition="RepositoryLibrary" replace="true">
+		<!--
+			Whether the link to the Repository Library appears in the header component or not.
+		-->
+		<visible>false</visible>
+	</config>
+	<config evaluator="string-compare" condition="WebFramework">
+		<web-framework>
+			<!-- SpringSurf Autowire Runtime Settings -->
+			<!-- 
+              Developers can set mode to 'development' to disable; SpringSurf caches,
+              FreeMarker template caching and Rhino JavaScript compilation.
+			-->
+			<autowire>
+				<!-- Pick the mode: "production" or "development" -->
+				<mode>production</mode>
+			</autowire>
+
+			<!-- Allows extension modules with <auto-deploy> set to true to be automatically deployed -->
+			<module-deployment>
+				<mode>manual</mode>
+				<enable-auto-deploy-modules>true</enable-auto-deploy-modules>
+			</module-deployment>
+		</web-framework>
+	</config>
+	<!-- Document Library config section -->
+	<config evaluator="string-compare" condition="DocumentLibrary" replace="true"> 
+		<tree>
+         <!--
+            Whether the folder Tree component should enumerate child folders or not.
+            This is a relatively expensive operation, so should be set to "false" for Repositories with broad folder structures.
+         -->
+         <evaluate-child-folders>false</evaluate-child-folders>
+         
+         <!--
+            Optionally limit the number of folders shown in treeview throughout Share.
+         -->
+         <maximum-folder-count>1000</maximum-folder-count>
+         
+         <!--  
+            Default timeout in milliseconds for folder Tree component to recieve response from Repository
+         -->
+         <timeout>7000</timeout>
+		</tree>
+		<aspects>
+			<!-- Aspects that a user can see -->
+			<visible>
+				<aspect name="cm:generalclassifiable" />
+				<aspect name="cm:complianceable" />
+				<aspect name="cm:dublincore" />
+				<aspect name="cm:effectivity" />
+				<aspect name="cm:summarizable" />
+				<aspect name="cm:versionable" />
+				<aspect name="cm:templatable" />
+				<aspect name="cm:emailed" />
+				<aspect name="emailserver:aliasable" />
+				<aspect name="cm:taggable" />
+				<aspect name="app:inlineeditable" />
+				<aspect name="gd:googleEditable" />
+				<aspect name="cm:geographic" />
+				<aspect name="exif:exif" />
+				<aspect name="audio:audio" />
+				<aspect name="cm:indexControl" />
+				<aspect name="dp:restrictable" />
+				<aspect name="bvc:brightcovepub" />
+				<aspect name="kap:kapxPub" />
+				<aspect name="ucm:isReadyToPublish" />
+			</visible>
+			<!-- Aspects that a user can add. Same as "visible" if left empty -->
+			<addable>								
+			</addable>
+			<!-- Aspects that a user can remove. Same as "visible" if left empty-->
+			<removeable>								
+			</removeable>
+		</aspects>	
+		<types>
+	      	<type name="cm:content">				
+				<subtype name="ucm:digitalAsset"/>	
+            </type>    		
+			<type name="cm:folder">
+			</type>	
+			<type name="ucm:digitalAsset"/>
+		</types>
+		
+		<!--
+			If set, will present a WebDAV link for the current item on the Document and Folder details pages.
+			Also used to generate the "View in Alfresco Explorer" action for folders.
+		-->
+		<repository-url>http://localhost:8080/alfresco</repository-url>
+		
+		<!--
+         Google Docs™ integration
+		-->
+		<google-docs>
+         <!--
+            Enable/disable the Google Docs UI integration (Extra types on Create Content menu, Google Docs actions).
+         -->
+         <enabled>false</enabled>
+
+         <!--
+            The mimetypes of documents Google Docs allows you to create via the Share interface.
+            The I18N label is created from the "type" attribute, e.g. google-docs.doc=Google Docs&trade; Document
+         -->
+         <creatable-types>
+            <creatable type="doc">application/msword</creatable>
+            <creatable type="xls">application/vnd.ms-excel</creatable>
+            <creatable type="ppt">application/vnd.ms-powerpoint</creatable>
+         </creatable-types>
+		</google-docs>
+
+		<!--
+			File upload configuration
+		-->
+		<file-upload>
+         <!--
+            Adobe Flash™
+            In certain environments, an HTTP request originating from Flash cannot be authenticated using an existing session.
+            See: http://bugs.adobe.com/jira/browse/FP-4830
+            For these cases, it is useful to disable the Flash-based uploader for Share Document Libraries.
+         -->
+			<adobe-flash-enabled>true</adobe-flash-enabled>
+		</file-upload>		
+	</config>   
+	
+	<config replace="true" evaluator="string-compare" condition="AdvancedSearch">
+		<advanced-search>
+			<!-- Forms for the advanced search type list -->
+			<forms>            
+				<form labelId="search.form.label.cm_content" descriptionId="search.form.desc.cm_content">cm:content</form>
+				<form labelId="search.form.label.cm_folder" descriptionId="search.form.desc.cm_folder">cm:folder</form>            				
+				<form labelId="type.ucm_digitalAsset" descriptionId="search.form.desc.ucm_digitalAsset">ucm:digitalAsset</form>
+			</forms>
+		</advanced-search>
+	</config> 
+		
+	<!-- UCM begins -->
+	<!-- ucm:digitalAsset type (existing nodes) -->
+	<config evaluator="node-type" condition="ucm:digitalAsset">
+		<forms>
+			<!-- Default form configuration for the ucm:digitalAsset type -->
+			<form>
+				<field-visibility>
+					<show id="cm:name"/>
+					<show id="cm:title" force="true" />
+					<show id="cm:description"/>
+					<show id="mimetype"/>
+					<show id="cm:author"/>
+					<show id="size" for-mode="view"/>
+					<show id="cm:creator" for-mode="view"/>
+					<show id="cm:created" for-mode="view"/>
+					<show id="cm:modifier" for-mode="view"/>
+					<show id="cm:modified" for-mode="view"/>					
+					<show id="ucm:id" for-mode="view"/>
+					<show id="ucm:title"/>
+					<show id="ucm:description"/>	
+					<show id="ucm:tags"/>												
+					<show id="ucm:productLine"/>	
+					<show id="ucm:contentGroup"/>
+					<show id="ucm:cuePoints"/>
+					<show id="ucm:resourceURL"/>
+					<show id="ucm:durationSeconds"/>
+					<show id="ucm:publishTarget"/>
+					<show id="ucm:publishError" for-mode="view"/>
+					<show id="ucm:activeProviderKey"/>
+					<show id="ucm:archivedAt"/>	
+					<!-- Brightcove Aspect Properties -->
+					<show id="bvc:id" for-mode="view" force="true"/>	
+					<show id="bvc:liveAt" force="true"/>	
+					<show id="bvc:createdAt" force="true"/>	
+					<show id="bvc:updatedAt" force="true"/>
+					<show id="bvc:archivedAt" force="true"/>	
+					<!-- KAPx Aspect Properties -->
+					<show id="kap:kapxSlideConversionId" for-mode="view" force="true"/>
+					<show id="kap:kapxSlideDeckUrl" for-mode="view" force="true"/>
+					<show id="kap:kapxSlideCount" force="true"/>	
+					<show id="kap:liveAt" force="true"/>	
+					<show id="kap:createdAt" force="true"/>	
+					<show id="kap:updatedAt" force="true"/>
+					<show id="kap:archivedAt" force="true"/>	
+					<!-- tags and categories -->
+					<show id="cm:taggable" for-mode="edit" force="true"/>
+					<show id="cm:categories" force="true" />	
+				</field-visibility>	
+				<appearance>
+					<field id="cm:description">
+						<control>
+							<control-param name="activateLinks">true</control-param>
+						</control>
+					</field>
+					<field id="mimetype">
+						<control template="/org/alfresco/components/form/controls/mimetype.ftl" />
+					</field>
+					<field id="size">
+						<control template="/org/alfresco/components/form/controls/size.ftl" />
+					</field>					
+					<field id="cm:modified"/>							
+					<set id="ucmsSet" appearance="title" label="UCMS Metadata" />
+					<field id="ucm:id" set="ucmsSet" label-id="prop.ucm_id"/>					
+					<field id="ucm:title" set="ucmsSet" label-id="prop.ucm_title"/>
+					<field id="ucm:description" set="ucmsSet" label-id="prop.ucm_description"/>	
+					<field id="ucm:tags" set="ucmsSet" label-id="prop.ucm_tags"/>												
+					<field id="ucm:productLine" set="ucmsSet" label-id="prop.ucm_productLine"/>	
+					<field id="ucm:contentGroup" set="ucmsSet" label-id="prop.ucm_contentGroup"/>
+					<field id="ucm:cuePoints" set="ucmsSet" label-id="prop.ucm_cuePoints"/>
+					<field id="ucm:resourceURL" set="ucmsSet" label-id="prop.ucm_resourceURL"/>
+					<field id="ucm:durationSeconds" set="ucmsSet" label-id="prop.ucm_durationSeconds"/>
+					<field id="ucm:publishTarget" set="ucmsSet" label-id="prop.ucm_publishTarget"/>
+					<field id="ucm:publishError" set="ucmsSet" label-id="prop.ucm_publishError"/>
+					<field id="ucm:activeProviderKey" set="ucmsSet" label-id="prop.ucm_activeProviderKey"/>
+					<field id="ucm:archivedAt" set="ucmsSet" label-id="prop.ucm_archivedAt"/>	
+					
+					<set id="bvcSet" appearance="bordered-panel" label="Brightcove Metadata" />
+					<field id="bvc:id" set="bvcSet" label-id="prop.bvc_id"/>
+					<field id="bvc:liveAt" set="bvcSet" label-id="prop.bvc_liveAt"/>
+					<field id="bvc:createdAt" set="bvcSet" label-id="prop.bvc_createdAt"/>
+					<field id="bvc:updatedAt" set="bvcSet" label-id="prop.bvc_updatedAt"/>
+					<field id="bvc:archivedAt" set="bvcSet" label-id="prop.bvc_archivedAt"/>
+					
+					<set id="kapxSet" appearance="fieldset" label="KAPx Metadata" />
+					<field id="kap:kapxSlideConversionId" set="kapxSet" label-id="prop.kap_kapxSlideConversionId"/>
+					<field id="kap:kapxSlideDeckUrl" set="kapxSet" label-id="prop.kap_kapxSlideDeckUrl"/>
+					<field id="kap:kapxSlideCount" set="kapxSet" label-id="prop.kap_kapxSlideCount"/>
+					<field id="kap:liveAt" set="kapxSet" label-id="prop.kap_liveAt"/>
+					<field id="kap:createdAt" set="kapxSet" label-id="prop.kap_createdAt"/>
+					<field id="kap:updatedAt" set="kapxSet" label-id="prop.kap_updatedAt"/>
+					<field id="kap:archivedAt" set="kapxSet" label-id="prop.kap_archivedAt"/>
+					<field id="cm:taggable">
+						<control>
+							<control-param name="compactMode">true</control-param>
+							<control-param name="params">aspect=cm:taggable</control-param>
+							<control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+							<control-param name="createNewItemIcon">tag</control-param>
+						</control>
+					</field>		
+					<field id="cm:categories">
+						<control>
+							<control-param name="compactMode">true</control-param>
+						</control>
+					</field>	
+				</appearance>
+			</form>
+			<!-- Document Library pop-up Edit Metadata form -->
+			<form id="doclib-simple-metadata">
+				<field-visibility>
+					<show id="cm:title" force="true"/>
+					<show id="cm:description"/>
+					<show id="cm:content"/>					
+					<show id="ucm:title"/>
+					<show id="ucm:description"/>	
+					<show id="ucm:tags"/>												
+					<show id="ucm:productLine"/>	
+					<show id="ucm:contentGroup"/>
+					<show id="ucm:cuePoints"/>
+					<show id="ucm:resourceURL"/>
+					<show id="ucm:durationSeconds"/>
+					<show id="ucm:publishTarget"/>
+					<show id="ucm:publishError" for-mode="view"/>
+					<show id="ucm:activeProviderKey"/>
+					<show id="ucm:archivedAt"/>	
+					<!-- Brightcove Aspect Properties -->						
+					<show id="bvc:liveAt" force="true"/>	
+					<show id="bvc:createdAt" force="true"/>	
+					<show id="bvc:updatedAt" force="true"/>
+					<show id="bvc:archivedAt" force="true"/>	
+					<!-- KAPx Aspect Properties -->					
+					<show id="kap:kapxSlideCount" force="true"/>	
+					<show id="kap:liveAt" force="true"/>	
+					<show id="kap:createdAt" force="true"/>	
+					<show id="kap:updatedAt" force="true"/>
+					<show id="kap:archivedAt" force="true"/>														
+				</field-visibility>
+				<appearance>
+					<field id="cm:title">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl" />
+					</field>
+					<field id="cm:content" read-only="true"/>					
+					<set id="ucmsSet" appearance="title" label="UCMS Metadata" />
+					<field id="ucm:id" set="ucmsSet" label-id="prop.ucm_id"/>					
+					<field id="ucm:title" set="ucmsSet" label-id="prop.ucm_title"/>
+					<field id="ucm:description" set="ucmsSet" label-id="prop.ucm_description"/>	
+					<field id="ucm:tags" set="ucmsSet" label-id="prop.ucm_tags"/>												
+					<field id="ucm:productLine" set="ucmsSet" label-id="prop.ucm_productLine"/>	
+					<field id="ucm:contentGroup" set="ucmsSet" label-id="prop.ucm_contentGroup"/>
+					<field id="ucm:cuePoints" set="ucmsSet" label-id="prop.ucm_cuePoints"/>
+					<field id="ucm:resourceURL" set="ucmsSet" label-id="prop.ucm_resourceURL"/>
+					<field id="ucm:durationSeconds" set="ucmsSet" label-id="prop.ucm_durationSeconds"/>
+					<field id="ucm:publishTarget" set="ucmsSet" label-id="prop.ucm_publishTarget"/>
+					<field id="ucm:publishError" set="ucmsSet" label-id="prop.ucm_publishError"/>
+					<field id="ucm:activeProviderKey" set="ucmsSet" label-id="prop.ucm_activeProviderKey"/>
+					<field id="ucm:archivedAt" set="ucmsSet" label-id="prop.ucm_archivedAt"/>
+					
+					<set id="bvcSet" appearance="panel" label="Brightcove Metadata" />
+					<field id="bvc:id" set="bvcSet" label-id="prop.bvc_id"/>
+					<field id="bvc:liveAt" set="bvcSet" label-id="prop.bvc_liveAt"/>
+					<field id="bvc:createdAt" set="bvcSet" label-id="prop.bvc_createdAt"/>
+					<field id="bvc:updatedAt" set="bvcSet" label-id="prop.bvc_updatedAt"/>
+					<field id="bvc:archivedAt" set="bvcSet" label-id="prop.bvc_archivedAt"/>										
+					
+					<set id="kapxSet" appearance="title" label="KAPx Metadata" />										
+					<field id="kap:kapxSlideCount" set="kapxSet" label-id="prop.kap_kapxSlideCount"/>
+					<field id="kap:liveAt" set="kapxSet" label-id="prop.kap_liveAt"/>
+					<field id="kap:createdAt" set="kapxSet" label-id="prop.kap_createdAt"/>
+					<field id="kap:updatedAt" set="kapxSet" label-id="prop.kap_updatedAt"/>
+					<field id="kap:archivedAt" set="kapxSet" label-id="prop.kap_archivedAt"/>		
+				</appearance>
+			</form>			
+		</forms>
+	</config>
+	<!-- UCM ends -->	
+	<config evaluator="aspect" condition="bvc:brightcovepub">
+		<forms>
+			<form>
+				<field-visibility>					
+					<show id="bvc:id" for-mode="view" force="true"/>	
+					<show id="bvc:liveAt" force="true"/>	
+					<show id="bvc:createdAt" force="true"/>	
+					<show id="bvc:updatedAt" force="true"/>
+					<show id="bvc:archivedAt" force="true"/>								
+				</field-visibility>
+				<appearance>
+					<set id="bvcSet" appearance="title" label="Brightcove Metadata" />
+					<field id="bvc:id" set="bvcSet" label-id="prop.bvc_id"/>
+					<field id="bvc:liveAt" set="bvcSet" label-id="prop.bvc_liveAt"/>
+					<field id="bvc:createdAt" set="bvcSet" label-id="prop.bvc_createdAt"/>
+					<field id="bvc:updatedAt" set="bvcSet" label-id="prop.bvc_updatedAt"/>
+					<field id="bvc:archivedAt" set="bvcSet" label-id="prop.bvc_archivedAt"/>				
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	<config evaluator="aspect" condition="kap:kapxpub">
+		<forms>
+			<form>
+				<field-visibility>										
+					<show id="kap:kapxSlideConversionId" for-mode="view" force="true"/>
+					<show id="kap:kapxSlideDeckUrl" for-mode="view" force="true"/>
+					<show id="kap:kapxSlideCount" force="true"/>	
+					<show id="kap:liveAt" force="true"/>	
+					<show id="kap:createdAt" force="true"/>	
+					<show id="kap:updatedAt" force="true"/>
+					<show id="kap:archivedAt" force="true"/>								
+				</field-visibility>
+				<appearance>					
+					<set id="kapxSet" appearance="title" label="KAPx Metadata" />
+					<field id="kap:kapxSlideConversionId" set="kapxSet" label-id="prop.kap_kapxSlideConversionId"/>
+					<field id="kap:kapxSlideDeckUrl" set="kapxSet" label-id="prop.kap_kapxSlideDeckUrl"/>
+					<field id="kap:kapxSlideCount" set="kapxSet" label-id="prop.kap_kapxSlideCount"/>
+					<field id="kap:liveAt" set="kapxSet" label-id="prop.kap_liveAt"/>
+					<field id="kap:createdAt" set="kapxSet" label-id="prop.kap_createdAt"/>
+					<field id="kap:updatedAt" set="kapxSet" label-id="prop.kap_updatedAt"/>
+					<field id="kap:archivedAt" set="kapxSet" label-id="prop.kap_archivedAt"/>					
+				</appearance>
+			</form>
+		</forms>
+	</config>	
+	<!-- ucm:digitalAsset type (new nodes) -->
+	<config evaluator="model-type" condition="ucm:digitalAsset">
+		<forms>
+			<!-- Default Create Content form -->
+			<form>
+				<field-visibility>
+				    <show id="cm:name" />
+				    <show id="cm:title" force="true" />
+				    <show id="cm:description" force="true" />
+				    <show id="cm:content" force="true" />
+				    <show id="mimetype" />
+				    <show id="app:editInline" force="true" />
+				    <show id="ucm:id" for-mode="view"/>
+					<show id="ucm:title"/>
+					<show id="ucm:description"/>	
+					<show id="ucm:tags"/>												
+					<show id="ucm:productLine"/>	
+					<show id="ucm:contentGroup"/>
+					<show id="ucm:cuePoints"/>
+					<show id="ucm:resourceURL"/>
+					<show id="ucm:durationSeconds"/>
+					<show id="ucm:publishTarget"/>
+					<show id="ucm:publishError"/>
+					<show id="ucm:activeProviderKey"/>
+					<show id="ucm:archivedAt"/>		
+				</field-visibility>
+				<appearance>
+					<field id="cm:name">
+						<control>
+							<control-param name="maxLength">255</control-param>
+						</control>
+					</field>
+					<field id="cm:title">
+						<control template="/org/alfresco/components/form/controls/textfield.ftl" />
+					</field>
+					<field id="cm:content">
+						<control>
+							<control-param name="editorAppearance">explorer</control-param>
+						</control>
+					</field>
+					<field id="mimetype">
+						<control template="/org/alfresco/components/form/controls/hidden.ftl">
+							<control-param name="contextProperty">mimeType</control-param>
+						</control>
+					</field>
+					<field id="app:editInline">
+						<control template="/org/alfresco/components/form/controls/hidden.ftl">
+							<control-param name="contextProperty">editInline</control-param>
+						</control>
+					</field>
+					<set id="ucmsSet" appearance="title" label="UCMS Metadata" />
+					<field id="ucm:id" set="ucmsSet" label-id="prop.ucm_id"/>					
+					<field id="ucm:title" set="ucmsSet" label-id="prop.ucm_title"/>
+					<field id="ucm:description" set="ucmsSet" label-id="prop.ucm_description"/>	
+					<field id="ucm:tags" set="ucmsSet" label-id="prop.ucm_tags"/>												
+					<field id="ucm:productLine" set="ucmsSet" label-id="prop.ucm_productLine"/>	
+					<field id="ucm:contentGroup" set="ucmsSet" label-id="prop.ucm_contentGroup"/>
+					<field id="ucm:cuePoints" set="ucmsSet" label-id="prop.ucm_cuePoints"/>
+					<field id="ucm:resourceURL" set="ucmsSet" label-id="prop.ucm_resourceURL"/>
+					<field id="ucm:durationSeconds" set="ucmsSet" label-id="prop.ucm_durationSeconds"/>
+					<field id="ucm:publishTarget" set="ucmsSet" label-id="prop.ucm_publishTarget"/>
+					<field id="ucm:publishError" set="ucmsSet" label-id="prop.ucm_publishError"/>
+					<field id="ucm:activeProviderKey" set="ucmsSet" label-id="prop.ucm_activeProviderKey"/>
+					<field id="ucm:archivedAt" set="ucmsSet" label-id="prop.ucm_archivedAt"/>
+				</appearance>
+			</form>
+			<!-- Search form -->
+			<form id="search">
+				<field-visibility>
+				   <show id="cm:name"/>
+				   <show id="cm:title"/>
+				   <show id="cm:description"/>				   
+				   <show id="cm:modified"/>
+				   <show id="cm:modifier"/>              
+				   <!-- ucm:digitalAsset -->
+				   <show id="ucm:id"/>
+				   <show id="ucm:title" force="true"/>
+				   <show id="ucm:description" force="true"/>
+				   <show id="ucm:contentGroup" force="true"/>				   
+				   <show id="ucm:productLine" force="true"/>
+				   <show id="ucm:archive" force="true"/>                   				   
+				   <!-- bvc:brightcovepub -->				  
+				   <show id="bvc:id" force="true"/>			  
+				</field-visibility>
+				<appearance>
+					<field id="cm:modified">
+						<control template="/org/alfresco/components/form/controls/daterange.ftl" />
+					</field>
+					<set id="ucmsSet" appearance="title" label="UCMS Metadata" />
+					<field id="ucm:id" set="ucmsSet"/>					
+					<field id="ucm:title" set="ucmsSet"/>					
+					<field id="ucm:description" set="ucmsSet"/>						
+					<field id="ucm:contentGroup" set="ucmsSet"/>						
+					<field id="ucm:productLine" set="ucmsSet"/>						
+					<field id="ucm:archive" set="ucmsSet">
+						<control template="/org/alfresco/components/form/controls/daterange.ftl"/>
+					</field>																								
+				</appearance>
+			</form>
+		</forms>
+	</config>		
+	<config evaluator="string-compare" condition="Remote">
+		<remote>
+			<endpoint>
+				<id>alfresco-noauth</id>
+				<name>Alfresco - unauthenticated access</name>
+				<description>Access to Alfresco Repository WebScripts that do not require authentication</description>
+				<connector-id>alfresco</connector-id>
+				<endpoint-url>http://localhost:8080/alfresco/s</endpoint-url>
+				<identity>none</identity>
+			</endpoint>
+			<endpoint>
+				<id>alfresco</id>
+				<name>Alfresco - user access</name>
+				<description>Access to Alfresco Repository WebScripts that require user authentication</description>
+				<connector-id>alfresco</connector-id>
+				<endpoint-url>http://localhost:8080/alfresco/s</endpoint-url>
+				<identity>user</identity>
+			</endpoint>
+			<endpoint>
+				<id>alfresco-feed</id>
+				<name>Alfresco Feed</name>
+				<description>Alfresco Feed - supports basic HTTP authentication via the EndPointProxyServlet</description>
+				<connector-id>http</connector-id>
+				<endpoint-url>http://localhost:8080/alfresco/s</endpoint-url>
+				<basic-auth>true</basic-auth>
+				<identity>user</identity>
+			</endpoint>         
+			 <endpoint>
+				<id>activiti-admin</id>
+				<name>Activiti Admin UI - user access</name>
+				<description>Access to Activiti Admin UI, that requires user authentication</description>
+				<connector-id>activiti-admin-connector</connector-id>
+				<endpoint-url>http://localhost:8080/alfresco/activiti-admin</endpoint-url>
+				<identity>user</identity>
+			 </endpoint>
+		</remote>
+	</config>	
+</alfresco-config>

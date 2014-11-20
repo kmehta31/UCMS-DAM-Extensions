@@ -1,0 +1,58 @@
+<model name="kapx:publishingmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Alfresco KAPx Publishing Content Model</description>
+	<author>Kalpesh</author>
+	<published>2012-07-02</published>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/publishing/1.0" prefix="pub" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.alfresco.org/model/publishing/kapx/1.0" prefix="kapx" />
+	</namespaces>
+
+	<types>
+		<type name="kapx:DeliveryChannel">
+			<title>KAPx Delivery Channel</title>
+			<description>Node type used to represent KAPx delivery channels</description>
+			<parent>pub:DeliveryChannel</parent>
+			<mandatory-aspects>
+				<aspect>kapx:DeliveryChannelAspect</aspect>
+			</mandatory-aspects>
+		</type>
+	</types>
+
+	<aspects>
+		<aspect name="kapx:DeliveryChannelAspect">
+			<title>KAPx Delivery Channel Aspect</title>
+			<description>Applied to a node that represents a KAPx delivery channel</description>
+			<properties>
+				<property name="kapx:protocol">
+					<title>Server protocol</title>
+					<type>d:text</type>
+				</property>	
+				<property name="kapx:host">
+					<title>Server hostname</title>
+					<type>d:text</type>
+				</property>				
+				<property name="kapx:port">
+					<title>Server port</title>
+					<type>d:int</type>
+				</property>
+				<property name="kapx:damhost">
+					<title>DAM Host</title>
+					<type>d:text</type>
+				</property>
+				<property name="kapx:damport">
+					<title>DAM Port</title>
+					<type>d:text</type>
+				</property>				
+			</properties>
+		</aspect>
+	</aspects>
+</model>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>  
+    <bean id="ucmsMessageBundle" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.extension.ucms</value>
+            </list>
+        </property>
+    </bean>
+       
+   <!--Bean to register Http Remote object with Surf  -->
+   <bean id="customSurfClientConfig" class="org.springframework.extensions.config.ConfigBootstrap" init-method="register">
+      <property name="configService" ref="web.config" />
+      <property name="configs">
+         <list>
+            <value>classpath:alfresco/extension/config/spring-webscripts-config-custom.xml</value>
+         </list>
+      </property>
+   </bean>
+   
+   <!--UCMS Java backed Webscripts Controllers -->
+   <bean id="webscript.ucms.createUCMAsset.post"
+      class="com.kapx.ucms.CreateUCMAsset"
+      parent="webscript">
+       	<property name="repository" ref="repositoryHelper" />
+   		<property name="serviceRegistry" ref="ServiceRegistry" />   		
+   </bean>
+   <bean id="webscript.ucms.publishAsset.get"
+      class="com.kapx.ucms.PublishUCMAsset"
+      parent="webscript">            	
+   		<property name="serviceRegistry" ref="ServiceRegistry" />   		
+   </bean>
+   <!-- 
+   <bean id="createAssetBehavior" 
+   	  class="com.kapx.ucms.CreateAssetBehavior" init-method="init">
+		<property name="policyComponent">
+			<ref bean="policyComponent"/>
+		</property>
+		<property name="serviceRegistry" ref="ServiceRegistry" />		
+    </bean>
+   -->  
+   <bean id="publishAsset" class="com.kapx.ucms.action.PublishAssetActionExecutor" parent="action-executer" >
+   		<property name="nodeService">
+      		<ref bean="nodeService" />
+   		</property>
+   </bean>   
+</beans>

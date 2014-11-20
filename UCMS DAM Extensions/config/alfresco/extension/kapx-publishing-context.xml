@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+   <bean parent="publishingService_dictionaryBootstrap" depends-on="dictionaryBootstrap">
+      <property name="models">
+         <list>
+            <value>alfresco/extension/model/kapxModel.xml</value>
+         </list>
+      </property>
+   </bean>
+
+    <bean id="kapxChannelMessageBundle" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.extension.kapx-publishing</value>
+            </list>
+        </property>
+    </bean>
+
+   <bean id="kapxDeliveryChannelType" class="com.kapx.ucms.publishing.kapx.KAPxChannelType" parent="baseChannelType">
+      <property name="publishingHelper" ref="kapxPublishingHelper" />      
+      <property name="contentService" ref="ContentService" />
+      <property name="fileFolderService" ref="FileFolderService"/>          
+   </bean>
+   
+   <bean id="kapxPublishingHelper" class="com.kapx.ucms.publishing.kapx.KAPxPublishingHelper">
+      <property name="encryptor" ref="metadataEncryptor" />      
+      <property name="contentService" ref="ContentService" />      
+   </bean>  
+</beans>

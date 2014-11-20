@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definition of new Model -->
+<model name="ucm:ucms_model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<!-- Optional meta-data about the model -->
+	<description>UCMS DAM Model</description>
+	<author>Kalpesh Mehta</author>
+	<version>1.0</version>
+	<!-- Imports are required to allow references to definitions in other models -->
+	<imports>
+		<!-- Import Alfresco Dictionary Definitions -->
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<!-- Import Alfresco Content Domain Model Definitions -->
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/publishing/1.0" prefix="pub" />
+	</imports>
+	<!-- Introduction of new namespaces defined by this model -->
+	<namespaces>
+		<namespace uri="http:/ucms.kaplan.com/model/content/1.0" prefix="ucm" />		
+		<namespace uri="http:/brightcove.video.cloud/model/content/1.0" prefix="bvc" />
+		<namespace uri="http:/www.kapx.com/model/content/1.0" prefix="kap" />		
+	</namespaces>
+	<constraints>
+		<constraint name="ucm:publishableTargetList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>BrightcoveHTTP</value>
+					<value>BrightcoveFTP</value>
+                    <value>KAPx</value>                    
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+	<types>
+		<!-- Enterprise-wide generic document type -->
+		<type name="ucm:digitalAsset">
+			<title>UCMS Digital Asset</title>
+			<parent>cm:content</parent>	
+			<properties>
+				<property name="ucm:id">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="ucm:fileName">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="ucm:title">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="ucm:description">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="ucm:tags">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<multiple>true</multiple>							
+				</property>
+				<property name="ucm:productLine">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="ucm:contentGroup">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>				
+				<property name="ucm:cuePoints">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>
+					<multiple>true</multiple>	
+				</property>
+				<property name="ucm:resourceURL">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>	
+				<property name="ucm:durationSeconds">
+					<type>d:double</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="ucm:publishTarget">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>
+					 <constraints>
+                        <constraint ref="ucm:publishableTargetList" />
+                    </constraints>	
+				</property>
+				<property name="ucm:publishError">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>						
+				</property>	
+				<property name="ucm:activeProviderKey">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>				
+				<property name="ucm:archivedAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>	
+			</properties>	
+		</type>		
+	</types>	
+	<aspects>
+		<aspect name="ucm:isReadyToPublish">
+			<title>Is Ready to Publish</title>
+			<properties></properties>			
+		</aspect>
+		<aspect name="ucm:isKapxUpdate">
+			<title>Is KAPx Update</title>
+			<properties></properties>			
+		</aspect>
+		<aspect name="bvc:brightcovePub">
+			<title>Brightcove Publishable</title>
+			<parent>pub:AssetAspect</parent>
+			<properties>				
+				<property name="bvc:id">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="bvc:url">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="bvc:liveAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>				
+				<property name="bvc:createdAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>	
+				<property name="bvc:updatedAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>				
+				<property name="bvc:archivedAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>	
+			</properties>
+		</aspect>
+		<aspect name="kap:kapxPub">
+			<title>KAPx Publishable</title>
+			<properties>				
+				<property name="kap:kapxSlideConversionId">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="kap:kapxSlideDeckUrl">
+					<type>d:text</type>		
+					<mandatory>false</mandatory>	
+				</property>				
+				<property name="kap:kapxSlideCount">
+					<type>d:int</type>		
+					<mandatory>false</mandatory>	
+				</property>	
+				<property name="kap:liveAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>				
+				<property name="kap:createdAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>	
+				<property name="kap:updatedAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>
+				<property name="kap:archivedAt">
+					<type>d:datetime</type>		
+					<mandatory>false</mandatory>	
+				</property>
+			</properties>
+		</aspect>		
+	</aspects>		
+</model>
