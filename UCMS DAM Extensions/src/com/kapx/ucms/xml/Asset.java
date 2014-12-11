@@ -11,6 +11,7 @@ public class Asset {
 	String displayName;
 	String type;
 	String encodeTo;	
+	boolean encodeMultiple;
 
 	@XmlAttribute
 	public void setFilename(String filename) {
@@ -56,6 +57,15 @@ public class Asset {
 	public String getEncodeTo() {
 		return encodeTo;
 	}
+	
+	public boolean getEncodeMultiple() {
+		return encodeMultiple;
+	}
+	
+	@XmlAttribute(name="encode-multiple")
+	public void setEncodeMultiple(boolean encodeMultiple) {
+		this.encodeMultiple = encodeMultiple;
+	}	
 	
 	@XmlAttribute(name="display-name")
 	public void setDisplayName(String displayName) {

@@ -32,6 +32,7 @@
    	<!--Brightcove FTP  -->
    	<bean id="brightcoveFTPDeliveryChannelType" class="com.kapx.ucms.publishing.brightcove.BrightcoveFTPChannelType" parent="baseChannelType">
       	<property name="encryptor" ref="metadataEncryptor"/>      	     
-      	<property name="contentService" ref="ContentService"/>            
+      	<property name="contentService" ref="ContentService"/>
+      	<property name="publishingHelper" ref="brightcovePublishingHelper" />              
    	</bean> 
 </beans>

@@ -40,15 +40,14 @@ public class BrightcovePublishingHelper
     }
     
     /**
-     * Get Write Token from channel properties & 
+     * Get Write Token from channel properties
      * 
      * @param channelProperties
      * @return
      */
     public String getWriteTokenChannelProperties(Map<QName, Serializable> channelProperties)
     {
-    	final String BRIGHTCOVE_WRITE_TOKEN	= (String)	channelProperties.get(BrightcovePublishingModel.PROP_WRITE_TOKEN);
-    	System.out.println("Write Token:"+BRIGHTCOVE_WRITE_TOKEN);
+    	final String BRIGHTCOVE_WRITE_TOKEN	= (String)	channelProperties.get(BrightcovePublishingModel.PROP_WRITE_TOKEN);    	
     	return BRIGHTCOVE_WRITE_TOKEN;        
     }
     /**
@@ -59,8 +58,7 @@ public class BrightcovePublishingHelper
      */
     public String getReadTokenChannelProperties(Map<QName, Serializable> channelProperties)
     {
-    	final String BRIGHTCOVE_READ_TOKEN	= (String)	channelProperties.get(BrightcovePublishingModel.PROP_READ_TOKEN);
-    	System.out.println("READ TOKEN:"+BRIGHTCOVE_READ_TOKEN);
+    	final String BRIGHTCOVE_READ_TOKEN	= (String)	channelProperties.get(BrightcovePublishingModel.PROP_READ_TOKEN);    	
     	return BRIGHTCOVE_READ_TOKEN;        
     }
     
@@ -72,13 +70,12 @@ public class BrightcovePublishingHelper
      */
     public String getReadURLTokenChannelProperties(Map<QName, Serializable> channelProperties)
     {
-    	final String BRIGHTCOVE_READURL_TOKEN	= (String)	channelProperties.get(BrightcovePublishingModel.PROP_READURL_TOKEN);
-    	System.out.println(BRIGHTCOVE_READURL_TOKEN);
+    	final String BRIGHTCOVE_READURL_TOKEN	= (String)	channelProperties.get(BrightcovePublishingModel.PROP_READURL_TOKEN);    	
     	return BRIGHTCOVE_READURL_TOKEN;        
     }
 
     /**
-     * Build URI for a nodeRef into MarkLogic Server using the channel properties
+     * Build URI for a nodeRef using the channel properties
      * 
      * @param nodeToPublish
      * @param channelProperties
@@ -91,12 +88,11 @@ public class BrightcovePublishingHelper
     	
     	String host	= (String) channelProperties.get(BrightcovePublishingModel.PROP_HOST);
     	Integer portObj	= ((Integer) channelProperties.get(BrightcovePublishingModel.PROP_PORT));
-    	int port = 0;
+    	int port = 80;
     	if(portObj!=null){
     		port = portObj.intValue();
     	}
-    	URI uri = URIUtils.createURI("http", host, port, "services/post",null, null);   	
-        System.out.println("Publish URI is:"+uri.toString());
+    	URI uri = URIUtils.createURI("http", host, port, "services/post",null, null);        
         return uri;
     }
 

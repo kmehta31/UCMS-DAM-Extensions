@@ -57,8 +57,7 @@ public class KAPxPublishingHelper
         String kapxUsername = (String) encryptor.decrypt(PublishingModel.PROP_CHANNEL_USERNAME,
                 channelProperties.get(PublishingModel.PROP_CHANNEL_USERNAME));
         String kapxPassword = (String) encryptor.decrypt(PublishingModel.PROP_CHANNEL_PASSWORD,
-                channelProperties.get(PublishingModel.PROP_CHANNEL_PASSWORD));
-        System.out.println("Username:"+kapxUsername+" Password:"+kapxPassword);
+                channelProperties.get(PublishingModel.PROP_CHANNEL_PASSWORD));        
         UsernamePasswordCredentials creds = new UsernamePasswordCredentials(kapxUsername, kapxPassword);
         HttpContext context = new BasicHttpContext();
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
@@ -87,8 +86,7 @@ public class KAPxPublishingHelper
     	if(portObj!=null){
     		port = portObj.intValue();
     	}
-    	URI uri = URIUtils.createURI(protocol, host, port, "api/conversion/",null, null);   	
-        System.out.println("Publish URI is:"+uri.toString());
+    	URI uri = URIUtils.createURI(protocol, host, port, "api/conversion/",null, null);        
         return uri;
     }
 

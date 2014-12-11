@@ -36,9 +36,21 @@
 					<title>FTP Server</title>
 					<type>d:text</type>
 				</property>
-				<property name="brightcoveFTP:port">
+				<property name="brightcoveFTP:ftpport">
 					<title>FTP Port</title>
 					<type>d:int</type>
+				</property>
+				<property name="brightcoveFTP:host">
+					<title>Server host URI</title>
+					<type>d:text</type>
+				</property>
+				<property name="brightcoveFTP:port">
+					<title>HTTP Port</title>
+					<type>d:int</type>
+				</property>
+				<property name="brightcoveFTP:writeToken">
+					<title>Server Write Token</title>
+					<type>d:text</type>
 				</property>
 				<property name="brightcoveFTP:publisherID">
 					<title>Publisher ID</title>

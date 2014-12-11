@@ -32,6 +32,12 @@
       parent="webscript">            	
    		<property name="serviceRegistry" ref="ServiceRegistry" />   		
    </bean>
+   <bean id="webscript.ucms.delUCMSAsset.get"
+      class="com.kapx.ucms.DeleteUCMSAsset"
+      parent="webscript">
+      	<property name="repository" ref="repositoryHelper" />            	
+   		<property name="serviceRegistry" ref="ServiceRegistry" />   		
+   </bean>
    <!-- 
    <bean id="createAssetBehavior" 
    	  class="com.kapx.ucms.CreateAssetBehavior" init-method="init">
@@ -42,6 +48,11 @@
     </bean>
    -->  
    <bean id="publishAsset" class="com.kapx.ucms.action.PublishAssetActionExecutor" parent="action-executer" >
+   		<property name="nodeService">
+      		<ref bean="nodeService" />
+   		</property>
+   </bean> 
+   <bean id="unPublishAsset" class="com.kapx.ucms.action.UnPublishAssetActionExecutor" parent="action-executer" >
    		<property name="nodeService">
       		<ref bean="nodeService" />
    		</property>

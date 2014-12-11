@@ -102,8 +102,6 @@ public class UCMSServiceHelper {
 			String ACCESSKEY = props.getProperty("ucmskey").trim();
 			String SECRETKEY = props.getProperty("ucmssecret").trim();
 			
-			//String UCMSTESTURL	= "http://4.kaplandevucms.appspot.com/file/ag9zfmthcGxhbmRldnVjbXNyEQsSBEZpbGUYgICAgKawggoM";
-			//String UCMSTESURI = "/file/ag9zfmthcGxhbmRldnVjbXNyEQsSBEZpbGUYgICAgKawggoM";
 			String UCMURL = strResourceURL.trim();
 			String UCMURI = "";
 			

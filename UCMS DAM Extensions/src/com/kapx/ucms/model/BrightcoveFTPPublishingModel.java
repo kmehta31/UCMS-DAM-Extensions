@@ -16,12 +16,19 @@ public interface BrightcoveFTPPublishingModel{
     public static final String PUBLISH_FTP_ID = "brightcoveftp";    
     
     public static final QName PROP_SERVER = QName.createQName(FTP_NAMESPACE, "server");
+    public static final QName PROP_FTP_PORT = QName.createQName(FTP_NAMESPACE, "ftpport");
+    
+    //host & port for unPublish via HTTP URI
+    public static final QName PROP_HOST = QName.createQName(FTP_NAMESPACE, "host");
     public static final QName PROP_PORT = QName.createQName(FTP_NAMESPACE, "port");
+    public static final QName PROP_WRITE_TOKEN = QName.createQName(FTP_NAMESPACE, "writeToken");
+    
     public static final QName PROP_PUBLISHER_ID = QName.createQName(FTP_NAMESPACE, "publisherID");
     public static final QName PROP_PREPARER = QName.createQName(FTP_NAMESPACE, "preparer");
     public static final QName PROP_EMAIL = QName.createQName(FTP_NAMESPACE, "email");
     public static final QName PROP_REPORT_SUCCESS = QName.createQName(FTP_NAMESPACE, "reportSuccess");   
-    public static final QName PROP_CALLBACK_URL = QName.createQName(FTP_NAMESPACE, "callbackURL");   
+    public static final QName PROP_CALLBACK_URL = QName.createQName(FTP_NAMESPACE, "callbackURL");
+     
     
     public static final QName TYPE_FTP_DELIVERY_CHANNEL = QName.createQName(FTP_NAMESPACE, "DeliveryChannel"); 
     

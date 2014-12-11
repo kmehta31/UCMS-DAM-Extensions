@@ -12,6 +12,8 @@ import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.lang.StringUtils;
+
 import com.kapx.ucms.HttpUCMSClient;
 import com.kapx.ucms.model.UCMSPublishingModel;
 
@@ -25,7 +27,7 @@ public class PublishAssetActionExecutor extends ActionExecuterAbstractBase
    }   
    protected void executeImpl(Action action, NodeRef actionedUponNodeRef)
    {
-	   System.out.println("Action Listener for Create Asset");	   
+	   System.out.println("Action Listener for Publish Asset (On Create/Update)");	   
 	   //Sleep for 8 Seconds before publishing when node is just created. To allow enough time for indexing.	   
 	   if(!nodeService.hasAspect(actionedUponNodeRef, UCMSPublishingModel.ASPECT_IS_READY_TO_PUBLISH)){
 		   try {			   
@@ -39,16 +41,12 @@ public class PublishAssetActionExecutor extends ActionExecuterAbstractBase
 			   e1.printStackTrace();
 		   }
 	   }
-	   if (this.nodeService.exists(actionedUponNodeRef) == true)
-	   {
-		   HttpUCMSClient ucmsClient = new HttpUCMSClient();		   
-		   try {
-			   String message = "";
-			   String TARGET = (String) nodeService.getProperty(actionedUponNodeRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHTARGET);
-			   if(TARGET.length() > 0){
-				  message = ucmsClient.publishToChannel(actionedUponNodeRef,TARGET);   
-			   }			   							
-			   System.out.println("Message"+message);
+	   if (this.nodeService.exists(actionedUponNodeRef) == true){		   		   
+		   try{
+			   HttpUCMSClient ucmsClient = new HttpUCMSClient();			   
+			   String TARGET = (String) nodeService.getProperty(actionedUponNodeRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHTARGET);			   
+			   String message = ucmsClient.publishToChannel(actionedUponNodeRef,TARGET);				   
+			   
 		   }catch (IOException | URISyntaxException e) {				
 			   e.printStackTrace();
 		   }

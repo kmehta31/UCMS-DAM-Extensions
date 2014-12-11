@@ -38,6 +38,7 @@ public interface UCMSPublishingModel
     
     public static final QName ASPECT_IS_READY_TO_PUBLISH = QName.createQName(UCMS_NAMESPACE, "isReadyToPublish");
     public static final QName ASPECT_IS_KAPX_UPDATE = QName.createQName(UCMS_NAMESPACE, "isKapxUpdate");
+    public static final QName ASPECT_IS_BRIGHTCOVE_UPDATE = QName.createQName(UCMS_NAMESPACE, "isBrightcoveUpdate");
     
     //Brightcove Publishable Aspect & Properties
     public static final QName ASPECT_BRIGHTCOVE_PUBLISHABLE = QName.createQName(BVC_NAMESPACE, "brightcovePub");

@@ -40,10 +40,12 @@ public class HttpUCMSClient {
 	public static final String PROP_PROTOCOL = "http";
 	public static final String PROP_UCMSNOTIFY_URL = "ucmsnotifyurl";
 	public static final String PROP_UCMSNOTIFYDOWNLOAD_URI = "ucmsnotifydownload";
-	public static final String PROP_UCMSNOTIFYPUBLISH_URI = "ucmsnotifypublish";	
+	public static final String PROP_UCMSNOTIFYPUBLISH_URI = "ucmsnotifypublish";
+	public static final String PROP_UCMSNOTIFYUNPUBLISH_URI = "ucmsnotifyunpublish";
 	public static final String PROP_LOGINAPI_URI = "loginapirequest";
 	public static final String PROP_PUBAPI_URI = "publishapirequest";
 	public static final String PROP_PUB_ERROR = "publishError";
+	public static final String PROP_PUB_MESSAGE = "message";
 	
 	private final static String BRIGHTCOVECHANNEL = "UCMSBrightcoveChannel";
 	private final static String KAPXCHANNEL = "UCMSKAPXChannel";
@@ -94,8 +96,7 @@ public class HttpUCMSClient {
 				String[] temp = result.split("\"ticket\":\""); 
 				System.out.println(temp[1]);
 				String[] temp1 = temp[1].split("\"");
-				Ticket = temp1[0];
-				System.out.println("ALF_TICKET:"+Ticket);
+				Ticket = temp1[0];				
 			}else{
 				throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,"Alfresco Tokens are not valid.");
 			}
@@ -113,10 +114,7 @@ public class HttpUCMSClient {
 		int port = Integer.parseInt(props.getProperty(PROP_DAM_PORT).trim());
 		List<BasicNameValuePair> qparams = new ArrayList<BasicNameValuePair>();
 		qparams.add(new BasicNameValuePair("alf_ticket",alfTicket));	
-		
-		URI uri =  URIUtils.createURI(PROP_PROTOCOL, host, port, publishAPI_URI,URLEncodedUtils.format(qparams,"UTF-8"), null);
-		
-		System.out.println("URI is:"+uri.toString());
+		URI uri =  URIUtils.createURI(PROP_PROTOCOL, host, port, publishAPI_URI,URLEncodedUtils.format(qparams,"UTF-8"), null);	
 		HttpPost httpPost  = new HttpPost(uri);				
 		HttpResponse response = null;
 		String message = "";		
@@ -156,6 +154,58 @@ public class HttpUCMSClient {
 		}	
 		return message;
 	}
+	
+	public String unPublishToChannel(NodeRef assetRef,String target) throws URISyntaxException, IOException{
+		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));
+		String publishAPI_URI	= props.getProperty(PROP_PUBAPI_URI).trim();
+		String alfTicket	= getAlfrescoTicket();	
+		String host = props.getProperty(PROP_DAM_HOST).trim();
+		int port = Integer.parseInt(props.getProperty(PROP_DAM_PORT).trim());
+		List<BasicNameValuePair> qparams = new ArrayList<BasicNameValuePair>();
+		qparams.add(new BasicNameValuePair("alf_ticket",alfTicket));	
+		
+		URI uri =  URIUtils.createURI(PROP_PROTOCOL, host, port, publishAPI_URI,URLEncodedUtils.format(qparams,"UTF-8"), null);
+		
+		System.out.println("URI is:"+uri.toString());
+		HttpPost httpPost  = new HttpPost(uri);				
+		HttpResponse response = null;
+		String message = "";		
+		try {
+			JSONObject publishObj = new JSONObject();		
+			JSONArray jsonNodesList	= new JSONArray();
+			String strAssetRef = assetRef.toString();			
+			jsonNodesList.put(strAssetRef);				
+			String channelNodeRef = "";
+			if(target.equalsIgnoreCase("BrightcoveHTTP") || target.equalsIgnoreCase("BrightcoveFTP")){			
+				channelNodeRef = getChannelRef(alfTicket,target);
+			}
+			if(channelNodeRef.length() >0){
+				publishObj.put("channelId",channelNodeRef);			
+				publishObj.put("unpublishNodes",jsonNodesList);		
+				String strJSON = publishObj.toString();				
+				StringEntity entity = new StringEntity(strJSON, "UTF-8");			
+				entity.setContentType("application/json");
+				httpPost.setEntity(entity);
+				HttpClient httpclient = new DefaultHttpClient();
+				System.out.println("UnPublish Asset to Queue...");
+				response = httpclient.execute(httpPost);
+				System.out.println("Response from Publishing Status Code:"+response.getStatusLine().getStatusCode());
+				System.out.println("Response from Publishing Reason:"+response.getStatusLine().getReasonPhrase());				
+			}else{							
+				message = "No publishing channel found for:"+channelNodeRef;
+			}		
+			
+			if(response.getStatusLine().getStatusCode() == 200){
+				message = "Success";
+			}else{
+				message = response.getStatusLine().getReasonPhrase();								
+			}	
+		} catch (Exception e ) {			
+			e.printStackTrace();
+		}	
+		return message;
+	}
+	
 	public String getChannelRef(String alfTicket,String target) throws UnsupportedEncodingException {
 		String 	ALFTICKET = alfTicket.trim();
 		String  URL	= "http://localhost:8080/alfresco/service/api/publishing/channels?alf_ticket="+ALFTICKET;
@@ -234,25 +284,32 @@ public class HttpUCMSClient {
 		response = httpclient.execute(httpPost);
 		return response;  
 	}
-	/*
-	public HttpResponse publishAsset(String ucmsID, String channel) throws IOException{
-		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));
-		String alfTicket	= getAlfrescoTicket();		
-		String host = props.getProperty(PROP_DAM_HOST).trim();
-		int port = Integer.parseInt(props.getProperty(PROP_DAM_PORT).trim());
-		List<BasicNameValuePair> qparams = new ArrayList<BasicNameValuePair>();
-		qparams.add(new BasicNameValuePair("alf_ticket",alfTicket));
-		String UCMSPUBLISHAPI = "alfresco/service/asset/"+ucmsID+"/publish/"+channel;	
-		HttpResponse response = null;
-		try {
-			URI uri =  URIUtils.createURI(PROP_PROTOCOL, host, port, UCMSPUBLISHAPI,URLEncodedUtils.format(qparams,"UTF-8"), null);
-			HttpClient httpclient1 = new DefaultHttpClient();
-			HttpGet httpPublish = new HttpGet(uri);				
-			response = httpclient1.execute(httpPublish);				
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
+	public HttpResponse notifyUCMSMediaUnPublish(String ucmsID, String message, String pubError) throws IOException, JSONException{		
+		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));		
+		String hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
+		String hostURI = props.getProperty(PROP_UCMSNOTIFYUNPUBLISH_URI).trim();		
+		String URL	= hostURL+ucmsID+hostURI;
+		System.out.println("UCMS UnPUblish Asset Notify URL:"+URL);		
+		StringEntity entityNotify = null;
+		
+		
+		JSONObject notifyObj	= new JSONObject();		
+		notifyObj.put(PROP_PUB_MESSAGE, message);
+		notifyObj.put(PROP_PUB_ERROR,pubError);
+		
+		System.out.println("JSON Properties for Notify:"+notifyObj.toString());		
+		entityNotify = new StringEntity(notifyObj.toString(), "UTF-8");			
+		entityNotify.setContentType("application/json");
+		
+		HttpClient httpclient = new DefaultHttpClient();
+		UCMSServiceHelper ucmService = new UCMSServiceHelper();
+		HttpPost httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);		
+		httpPost.setEntity(entityNotify);			
+		response = httpclient.execute(httpPost);
 		return response;  
-	}*/
+	}
+	
+	
+	
 }

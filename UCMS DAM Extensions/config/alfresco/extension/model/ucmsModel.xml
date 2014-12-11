@@ -109,6 +109,10 @@
 			<title>Is KAPx Update</title>
 			<properties></properties>			
 		</aspect>
+		<aspect name="ucm:isBrightcoveUpdate">
+			<title>Is Brightcove Update</title>
+			<properties></properties>			
+		</aspect>
 		<aspect name="bvc:brightcovePub">
 			<title>Brightcove Publishable</title>
 			<parent>pub:AssetAspect</parent>

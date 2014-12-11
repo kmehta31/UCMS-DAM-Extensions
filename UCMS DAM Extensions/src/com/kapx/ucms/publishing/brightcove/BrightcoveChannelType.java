@@ -222,35 +222,34 @@ public class BrightcoveChannelType extends AbstractChannelType
     @Override
     public void unpublish(NodeRef nodeToUnpublish, Map<QName, Serializable> channelProperties)
     {
-    	NodeService nodeService = getNodeService();
-    	
+    	NodeService nodeService = getNodeService();    	
     	NodeRef srcfileRef = null;  
     	NodeRef tgtfileRef = null; 
     	NodeRef fileRef	= null;   
-    	List<AssociationRef> listTargetChilds = nodeService.getTargetAssocs(nodeToUnpublish,UCMSPublishingModel.PROPERTY_PUB_SOURCE);       
-    	   
-        //System.out.println("list Target Childs size:"+listTargetChilds.size());
+    	boolean isError = false;
+    	String strError = "";
+    	List<AssociationRef> listTargetChilds = nodeService.getTargetAssocs(nodeToUnpublish,UCMSPublishingModel.PROPERTY_PUB_SOURCE);   
+        
         for (AssociationRef child : listTargetChilds) {        	
         	srcfileRef = child.getSourceRef();  
         	tgtfileRef	= child.getTargetRef();
-        	fileRef	= tgtfileRef;
-        	//System.out.println("SRC File Ref:"+srcfileRef);
-        	//System.out.println("TGT File Ref:"+tgtfileRef);        	           
+        	fileRef	= tgtfileRef;        	      
         }
-        String strBVCID	=	(String)nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_BVC_ID);
-        System.out.println("BVC ID:"+strBVCID);
-        long bvcid = 0;
+        
+        String strUCMSID = "";
+        strUCMSID = (String) nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_UCM_ID);
+        String strBVCID	=	(String)nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_BVC_ID);       
+        long bvcid = 0;        
         if(strBVCID!=null && strBVCID.length()>0){
-        	bvcid	= Long.parseLong(strBVCID);
-        	System.out.println("BVC ID:"+bvcid);
+        	bvcid	= Long.parseLong(strBVCID);        	
         }else{
-        	nodeService.setProperty(fileRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHERROR, "No Brightcove ID found for the node to Delete.");
-        	throw new AlfrescoRuntimeException("No Brightcove ID found for the node to Delete.");
+        	isError = true;
+        	strError = "No Brightcove ID found for the node to Delete";        	
         }
     	Object[] params = getDeleteParams(bvcid, channelProperties);    	
-    	if(params!=null){
-         	URI uriPut;
-			try {				
+    	try{
+    		if(params!=null){
+	         	URI uriPut;								
 				uriPut = publishingHelper.getURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);            
 				InputStream in = ClientHttpRequest.post(new java.net.URL(uriPut.toString()), params );
 				
@@ -261,22 +260,45 @@ public class BrightcoveChannelType extends AbstractChannelType
 				while ((bytesRead = in.read(buffer)) > 0){
 					ret.write(buffer, 0, bytesRead);
 				}			            
-				String response = new String(ret.toByteArray());  
-				System.out.println("Response:"+response);         
+				String response = new String(ret.toByteArray());				         
 				updateNodePropertiesAfterUnPublish(response, nodeService, fileRef);
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}           
-			
-                       	
-		}else{
-         	throw new AlfrescoRuntimeException("No WRITE TOKEN FOR Brightcove Provided");
-         }
-    	    
+    		}else{
+    			isError = true;
+            	strError = "No WRITE TOKEN FOR Brightcove Provided";
+    		}		
+		}catch (Exception e) {
+			isError = true;
+			strError = e.getLocalizedMessage();				
+		}finally{				
+			if(isError == true){			
+				HttpUCMSClient ucmsClient = new HttpUCMSClient();
+    			try {
+    				//Notify UCMS App for UnPublishing Error
+					HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"fail",strError);
+					if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
+	    	            System.out.println("UCMS Notification for Publish Error Successful for:"+strUCMSID);		                        
+	    	        } else{
+	    	        	System.out.println("UCMS Notification for Publish Error failed:"+httpResponse.getStatusLine().getReasonPhrase());
+	    			}
+				} catch (Exception e) {						
+					e.printStackTrace();
+				}	    	
+			}
+		}
+    	if(isError==false){
+    		//Notify UCMS for Publish Successful     
+    		HttpUCMSClient ucmsClient = new HttpUCMSClient(); 			
+  			try {
+  				HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"success",strError);	
+  				if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
+  					System.out.println("UCMS Notification Successful for Unpublishing Asset:"+strUCMSID);		                        
+  				} else{
+  					System.out.println("UCMS Notification for Unpublishing Asset failed."+httpResponse.getStatusLine().getReasonPhrase());
+  				}
+  			}catch (IOException | JSONException e ) {			
+  				e.printStackTrace();
+  			}	       
+        }
     }
     
     public Object[] getWriteParams(String strBVCID, Map<String, Object> paramMap, Map<QName, Serializable> channelProperties,File contentFile){    	
@@ -436,19 +458,17 @@ public class BrightcoveChannelType extends AbstractChannelType
 		return returnBVCID;
     }
     public void updateNodePropertiesAfterUnPublish(String resp,NodeService nodeService,NodeRef nodeToPublish){   	
-		try {    	
+    	try {    	
 	        JSONObject jObject = new JSONObject(resp);
-	        if(jObject.isNull("error")){							
-	            if(nodeService.hasAspect(nodeToPublish, UCMSPublishingModel.ASPECT_BRIGHTCOVE_PUBLISHABLE)){	            	
-	            	nodeService.removeAspect(nodeToPublish, UCMSPublishingModel.ASPECT_BRIGHTCOVE_PUBLISHABLE);	            	
-	            }
-	            System.out.println("Properties updated");
+	        if(jObject.isNull("error")){
+	        	//delete node in Alfresco after successful unpublish
+	        	nodeService.deleteNode(nodeToPublish);	           	           
 	        }else{
-	        	throw new AlfrescoRuntimeException("UnPublishing Error");                	
+	        	throw new AlfrescoRuntimeException("UnPublishing Error from Brightcove");                	
 	        }  
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			throw new AlfrescoRuntimeException("Error Creating JSON Response Object");
-		}    
+		}     
     }   
 }
