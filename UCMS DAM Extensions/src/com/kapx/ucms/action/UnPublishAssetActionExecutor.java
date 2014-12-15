@@ -3,8 +3,6 @@ package com.kapx.ucms.action;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.action.executer.ActionExecuterAbstractBase;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ParameterDefinition;

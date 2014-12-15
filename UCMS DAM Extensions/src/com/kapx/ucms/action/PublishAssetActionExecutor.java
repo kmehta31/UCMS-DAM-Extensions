@@ -12,8 +12,6 @@ import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.apache.commons.lang.StringUtils;
-
 import com.kapx.ucms.HttpUCMSClient;
 import com.kapx.ucms.model.UCMSPublishingModel;
 
@@ -45,7 +43,7 @@ public class PublishAssetActionExecutor extends ActionExecuterAbstractBase
 		   try{
 			   HttpUCMSClient ucmsClient = new HttpUCMSClient();			   
 			   String TARGET = (String) nodeService.getProperty(actionedUponNodeRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHTARGET);			   
-			   String message = ucmsClient.publishToChannel(actionedUponNodeRef,TARGET);				   
+			   ucmsClient.publishToChannel(actionedUponNodeRef,TARGET);				   
 			   
 		   }catch (IOException | URISyntaxException e) {				
 			   e.printStackTrace();

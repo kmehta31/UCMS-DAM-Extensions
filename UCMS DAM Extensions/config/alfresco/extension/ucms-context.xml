@@ -56,5 +56,12 @@
    		<property name="nodeService">
       		<ref bean="nodeService" />
    		</property>
+   </bean> 
+   <bean id="correctFTPAssets" class="com.kapx.ucms.action.CorrectFTPAssetsActionExecutor" parent="action-executer" >
+   		<property name="nodeService">
+      		<ref bean="nodeService" />
+   		</property>
+   		<property name="repository" ref="repositoryHelper" />
+   		<property name="serviceRegistry" ref="ServiceRegistry" />
    </bean>   
 </beans>

@@ -39,6 +39,11 @@
 				<property name="ucm:id">
 					<type>d:text</type>
 					<mandatory>false</mandatory>
+					<index enabled="true">
+                 		<atomic>true</atomic>
+                 		<stored>false</stored>
+                 		<tokenised>false</tokenised>
+              		</index>	
 				</property>
 				<property name="ucm:fileName">
 					<type>d:text</type>
@@ -119,7 +124,12 @@
 			<properties>				
 				<property name="bvc:id">
 					<type>d:text</type>		
-					<mandatory>false</mandatory>	
+					<mandatory>false</mandatory>
+					<index enabled="true">
+                 		<atomic>true</atomic>
+                 		<stored>false</stored>
+                 		<tokenised>false</tokenised>
+              		</index>		
 				</property>
 				<property name="bvc:url">
 					<type>d:text</type>		
@@ -148,7 +158,12 @@
 			<properties>				
 				<property name="kap:kapxSlideConversionId">
 					<type>d:text</type>		
-					<mandatory>false</mandatory>	
+					<mandatory>false</mandatory>
+					<index enabled="true">
+                 		<atomic>true</atomic>
+                 		<stored>false</stored>
+                 		<tokenised>false</tokenised>
+              		</index>		
 				</property>
 				<property name="kap:kapxSlideDeckUrl">
 					<type>d:text</type>		
