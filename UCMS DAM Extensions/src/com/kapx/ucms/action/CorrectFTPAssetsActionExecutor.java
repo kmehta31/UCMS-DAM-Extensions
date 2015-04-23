@@ -69,7 +69,8 @@ public class CorrectFTPAssetsActionExecutor extends ActionExecuterAbstractBase
 	 	   	String BVREADTOKEN = props.getProperty("bcreadtoken").trim();
 	 	   	
 	 	   	int i = 0;
-	        int j = 0;		   	
+	        int j = 0;
+	        int k = 0;
 	        SearchParameters sp = new SearchParameters();	   	
 		   	sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
 	    	sp.setLanguage(SearchService.LANGUAGE_LUCENE);    	
@@ -79,30 +80,45 @@ public class CorrectFTPAssetsActionExecutor extends ActionExecuterAbstractBase
 	        for(ResultSetRow row : results){	        	
 		    	assetRef= row.getNodeRef();	        	
 		    	String cmsBVCID = (String) nodeService.getProperty(assetRef, UCMSPublishingModel.PROPERTY_BVC_ID);
-		    	String UCMSID = (String) nodeService.getProperty(assetRef, UCMSPublishingModel.PROPERTY_UCM_ID);
-			   	cmsBVCID = cmsBVCID.trim();
-			   	UCMSID = UCMSID.trim();		  		   			  		   	
-			   	String URL = "http://api.brightcove.com/services/library?command=find_video_by_reference_id&reference_id="+UCMSID+"&video_fields=id,name&token="+BVREADTOKEN; 				   	
+		    	String UCMSID = (String) nodeService.getProperty(assetRef, UCMSPublishingModel.PROPERTY_UCM_ID);		    	
+			   	if(StringUtils.isEmpty(cmsBVCID)){
+			   		cmsBVCID = "";
+			   	}else{
+			   		cmsBVCID = cmsBVCID.trim();
+			   	}
+			   	
+			   	if(!StringUtils.isEmpty(UCMSID)){
+			   		UCMSID = UCMSID.trim();
+			   	}
+			   	String URL = "http://api.brightcove.com/services/library?command=find_video_by_reference_id&reference_id="+UCMSID+"&video_fields=id,name&token="+BVREADTOKEN;
+			   	
 			   	HttpClient httpClient = new DefaultHttpClient();
 			   	HttpGet httpGet = new HttpGet(URL.trim());  		
 			   	HttpResponse response = httpClient.execute(httpGet);		  		   	
-				if(response.getStatusLine().getStatusCode() == 200){				
-					String result = EntityUtils.toString(response.getEntity());				
-					JSONObject jsonObject	= new JSONObject(result);
-					String BVCID = (String) jsonObject.getString("id").trim();
-					if(cmsBVCID.equalsIgnoreCase(BVCID)){							
-						i++;
+				if(response.getStatusLine().getStatusCode() == 200){					
+					String result = EntityUtils.toString(response.getEntity());
+					if(result!=null && !result.equalsIgnoreCase("null")){
+						JSONObject jsonObject	= new JSONObject(result);
+						String BVCID = (String) jsonObject.getString("id").trim();
+						if(cmsBVCID.equalsIgnoreCase(BVCID)){							
+							i++;
+						}else{
+							j++;
+							nodeService.setProperty(assetRef, UCMSPublishingModel.PROPERTY_BVC_ID,BVCID);
+							System.out.println("UCMS ID updated for:"+UCMSID+" from cmsBVCID:"+cmsBVCID+" to BVCID:"+BVCID);
+						}					
 					}else{
-						j++;
-						nodeService.setProperty(assetRef, UCMSPublishingModel.PROPERTY_BVC_ID,BVCID);
-						System.out.println("UCMS ID updated for:"+UCMSID+" from cmsBVCID:"+cmsBVCID+" to BVCID:"+BVCID);
-					}					
+						k++;
+						System.out.println("No valid reference found in Brightcove for:"+UCMSID);
+					}
+						
 					//updateBrightVideo(BVCID,assetRef);
 				}
 			}
 	        System.out.println("Total match found:"+i);
 			System.out.println("Total records updated:"+j);
-			System.out.println("Total Records:"+(i+j));
+			System.out.println("Total records with no relevant reference in BC:"+k);
+			System.out.println("Total Records:"+(i+j+k));
 		  	   
 	   }catch (Exception e) {				
 		   e.printStackTrace();

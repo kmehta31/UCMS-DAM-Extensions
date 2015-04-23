@@ -72,7 +72,7 @@ public class DeleteUCMSAsset extends DeclarativeWebScript {
 	    	SearchParameters sp = new SearchParameters();
 	    	sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
 	    	sp.setLanguage(SearchService.LANGUAGE_LUCENE);
-	    	sp.setQuery("@ucm\\:id:'"+UCMSID+"' AND NOT ASPECT:\"pub:published\"");	  	    	     
+	    	sp.setQuery("@ucm\\:id:\""+UCMSID+"\" AND NOT ASPECT:\"pub:published\"");	  	    	     
 	        results = registry.getSearchService().query(sp);	     
 	        System.out.println("To be deleted Item founds for UCMSID:"+UCMSID+" ="+results.length());
 	        String assetName = null;
@@ -87,6 +87,7 @@ public class DeleteUCMSAsset extends DeclarativeWebScript {
 	        	message = "Media item moved to deleted space";
 	    	}else{
 	    		message = "No node found for UCMS ID:"+UCMSID;
+	    		throw new AlfrescoRuntimeException(message);
 	    		
 	    	}	         
     	} catch (Exception e) {

@@ -47,8 +47,8 @@ public class HttpUCMSClient {
 	public static final String PROP_PUB_ERROR = "publishError";
 	public static final String PROP_PUB_MESSAGE = "message";
 	
-	private final static String BRIGHTCOVECHANNEL = "UCMSBrightcoveChannel";
-	private final static String KAPXCHANNEL = "UCMSKAPXChannel";
+	//private final static String BRIGHTCOVECHANNEL = "UCMSBrightcoveChannel";
+	//private final static String KAPXCHANNEL = "UCMSKAPXChannel";
 	
 	
 	HttpResponse response = null;

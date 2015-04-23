@@ -56,7 +56,7 @@ public class PublishUCMAsset extends DeclarativeWebScript {
 	    	SearchParameters sp = new SearchParameters();
 	    	sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
 	    	sp.setLanguage(SearchService.LANGUAGE_LUCENE);
-	    	sp.setQuery("@ucm\\:id:'"+UCMSID+"' AND NOT ASPECT:\"pub:published\"");	  	    	     
+	    	sp.setQuery("@ucm\\:id:\""+UCMSID+"\" AND NOT ASPECT:\"pub:published\"");	  	    	     
 	        results = registry.getSearchService().query(sp);	        
 	        for(ResultSetRow row : results)
 	        {
@@ -66,12 +66,14 @@ public class PublishUCMAsset extends DeclarativeWebScript {
 	        	//nodeService.setProperty(assetRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHERROR, "");		
 	        	message = client.publishToChannel(assetRef,strPublishTarget);
 	        	if(message.equalsIgnoreCase("success")){
-	        		System.out.println("Publishing to Channel is successful");
+	        		message = "Publishing to Channel is successful";
+	        		System.out.println(message);
 	        	}else{
 	        		 throw new AlfrescoRuntimeException(message);
 	        	}	        	
 		    		
 	    	}else{
+	    		System.out.println("No record found for UCMS ID:"+UCMSID);
 	    		message = "No node found for UCMS ID:"+UCMSID;
 	    		throw new AlfrescoRuntimeException(message);
 	    	}	         
@@ -79,7 +81,7 @@ public class PublishUCMAsset extends DeclarativeWebScript {
     		if(assetRef!=null){
     			nodeService.setProperty(assetRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHERROR, e.getLocalizedMessage());
     		}
-    		throw new WebScriptException(HttpServletResponse.SC_BAD_REQUEST , "Error Publishing Item for "+UCMSID);			
+    		throw new WebScriptException(HttpServletResponse.SC_BAD_REQUEST , e.getLocalizedMessage());			
 		}finally
         {
             if(results != null)
