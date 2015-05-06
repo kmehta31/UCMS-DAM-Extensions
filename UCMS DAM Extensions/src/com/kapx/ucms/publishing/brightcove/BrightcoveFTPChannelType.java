@@ -113,7 +113,11 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
     	NodeService nodeService = getNodeService();      
         NodeRef publishNodeRef	= getPublishingNodeRef(nodeToPublish,nodeService);        
     	String strBVCID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_BVC_ID); 
-    	String strUCMSID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_ID);    	
+    	String strUCMSID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_ID);
+    	String strResourceURL = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_RESOURCEURL);
+    	if(strResourceURL==null){
+        	strResourceURL = "";
+        }
     	if(nodeService.hasAspect(publishNodeRef, UCMSPublishingModel.ASPECT_IS_BRIGHTCOVE_UPDATE)){
     		try{
     			String publishError = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_PUBLISHERROR);	        	
@@ -127,10 +131,10 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
     	 	        	durationObj = 0.0;
     	 	        }
     	 	        double duration = durationObj;
-	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,strBVCID,duration,false,"");	        		
+	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,strBVCID,duration,false,"",strResourceURL);	        		
 	        	}else{
 	        		//Notify UCMS for Publish Failure for BrightcoveFTP        		
-	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,false,publishError);
+	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,false,publishError,strResourceURL);
 	        	}	
 				
 				if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
@@ -196,7 +200,7 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
 						HttpUCMSClient ucmsClient = new HttpUCMSClient();
 		    			try {
 		    				//Notify UCMS App for Publishing Error
-							HttpResponse httpResponse = ucmsClient.notifyUCMSMediaPublish(ucmsID,"",0,false,strError);
+							HttpResponse httpResponse = ucmsClient.notifyUCMSMediaPublish(ucmsID,"",0,false,strError,strResourceURL);
 							if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 			    	            System.out.println("UCMS Notification for Publish Error Successful");		                        
 			    	        } else{
@@ -232,6 +236,10 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
     	NodeRef tgtfileRef = null; 
     	NodeRef fileRef	= null;  
     	String strUCMSID = "";
+    	String strResourceURL = (String) nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_UCM_RESOURCEURL);
+    	if(strResourceURL==null){
+        	strResourceURL = "";
+        }
     	try{   	
 	    	List<AssociationRef> listTargetChilds = nodeService.getTargetAssocs(nodeToUnpublish,UCMSPublishingModel.PROPERTY_PUB_SOURCE);        
 	        for (AssociationRef child : listTargetChilds) {        	
@@ -240,7 +248,8 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
 	        	fileRef	= tgtfileRef;        	      
 	        }
 	        strUCMSID = (String) nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_UCM_ID);
-	        String strBVCID	=	(String)nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_BVC_ID);	        
+	        String strBVCID	=	(String)nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_BVC_ID);	
+	        
 	        long bvcid = 0;
 	        if(strBVCID!=null && strBVCID.length()>0){
 	        	bvcid	= Long.parseLong(strBVCID);	        	
@@ -278,7 +287,7 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
 				HttpUCMSClient ucmsClient = new HttpUCMSClient();
     			try {
     				//Notify UCMS App for UnPublishing Error
-					HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"fail",strError);
+					HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"fail",strError,strResourceURL);
 					if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 	    	            System.out.println("UCMS Notification for Publish Error Successful for:"+strUCMSID);		                        
 	    	        } else{
@@ -292,7 +301,7 @@ public class BrightcoveFTPChannelType extends AbstractChannelType
     	if(isError==false){ 	            	
  	        HttpUCMSClient ucmsClient = new HttpUCMSClient(); 			
  			try {
- 				HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"success",strError);	
+ 				HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"success",strError,strResourceURL);	
  				if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
  					System.out.println("UCMS Notification Successful for Unpublishing Asset:"+strUCMSID);		                        
  				} else{

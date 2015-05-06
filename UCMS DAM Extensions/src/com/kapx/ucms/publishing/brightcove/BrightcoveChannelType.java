@@ -107,9 +107,13 @@ public class BrightcoveChannelType extends AbstractChannelType
         
         String fileName = (String) nodeService.getProperty(publishNodeRef, ContentModel.PROP_NAME);
         String description = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_DESC);
-        String ucmsID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_ID);
-        List<String> tagsList =  (ArrayList<String>) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_TAGS);   
+        String ucmsID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_ID);        
         String strUCMSID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_ID);
+        String strResourceURL = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_RESOURCEURL); 
+        if(strResourceURL==null){
+        	strResourceURL = "";
+        }
+        List<String> tagsList =  (ArrayList<String>) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_TAGS);   
         String strBVCID = "";       
         
         System.out.println("Description is:"+description);
@@ -183,8 +187,8 @@ public class BrightcoveChannelType extends AbstractChannelType
 					//Notify UCMS for Publish Failure 
 					HttpUCMSClient ucmsClient = new HttpUCMSClient();
 	    			try {
-	    				//Notify UCMS App for Publishing Error
-						HttpResponse httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,false,strError);
+	    				//Notify UCMS App for Publishing Error	    				
+						HttpResponse httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,false,strError,strResourceURL);
 						if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 		    	            System.out.println("UCMS Notification for Publish Error Successful");		                        
 		    	        } else{
@@ -207,7 +211,7 @@ public class BrightcoveChannelType extends AbstractChannelType
 	        HttpUCMSClient ucmsClient = new HttpUCMSClient();
 			HttpResponse httpResponse = null;
 			try {
-				httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,""+strBVCID,duration,false,"");		
+				httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,""+strBVCID,duration,false,"",strResourceURL);		
 				if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 					System.out.println("UCMS Notification Successful");		                        
 				} else{
@@ -238,7 +242,11 @@ public class BrightcoveChannelType extends AbstractChannelType
         
         String strUCMSID = "";
         strUCMSID = (String) nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_UCM_ID);
-        String strBVCID	=	(String)nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_BVC_ID);       
+        String strBVCID	=	(String)nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_BVC_ID);  
+        String strResourceURL = (String) nodeService.getProperty(fileRef, UCMSPublishingModel.PROPERTY_UCM_RESOURCEURL); 
+        if(strResourceURL==null){
+        	strResourceURL = "";
+        }
         long bvcid = 0;        
         if(strBVCID!=null && strBVCID.length()>0){
         	bvcid	= Long.parseLong(strBVCID);        	
@@ -274,7 +282,7 @@ public class BrightcoveChannelType extends AbstractChannelType
 				HttpUCMSClient ucmsClient = new HttpUCMSClient();
     			try {
     				//Notify UCMS App for UnPublishing Error
-					HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"fail",strError);
+					HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"fail",strError, strResourceURL);
 					if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 	    	            System.out.println("UCMS Notification for Publish Error Successful for:"+strUCMSID);		                        
 	    	        } else{
@@ -289,7 +297,7 @@ public class BrightcoveChannelType extends AbstractChannelType
     		//Notify UCMS for Publish Successful     
     		HttpUCMSClient ucmsClient = new HttpUCMSClient(); 			
   			try {
-  				HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"success",strError);	
+  				HttpResponse httpResponse = ucmsClient.notifyUCMSMediaUnPublish(strUCMSID,"success",strError, strResourceURL);	
   				if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
   					System.out.println("UCMS Notification Successful for Unpublishing Asset:"+strUCMSID);		                        
   				} else{

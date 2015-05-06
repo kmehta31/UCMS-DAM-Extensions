@@ -28,6 +28,7 @@ import org.springframework.extensions.webscripts.WebScriptException;
 public class HttpUCMSClient {	
 	public static final String AMAZON_DOMAIN_IDENTIFIER = "s3.amazonaws.com";
 	public static final String UCMS_DOMAIN_IDENTIFIER = "appspot.com";
+	public static final String UCMS_DOMAIN_IDENTIFIER1 = "kaplan.com";
 	public static final String DAM_DOMAIN_IDENTIFIER  = "alfresco";
 	public static final String PROP_BVCID = "brightcoveProviderId";
 	public static final String PROP_DURATION = "durationSeconds";
@@ -39,6 +40,7 @@ public class HttpUCMSClient {
 	public static final String PROP_DAM_PORT = "damport";
 	public static final String PROP_PROTOCOL = "http";
 	public static final String PROP_UCMSNOTIFY_URL = "ucmsnotifyurl";
+	public static final String PROP_UCMSNOTIFY_URL_NEW = "ucmsnotifyurlnew";
 	public static final String PROP_UCMSNOTIFYDOWNLOAD_URI = "ucmsnotifydownload";
 	public static final String PROP_UCMSNOTIFYPUBLISH_URI = "ucmsnotifypublish";
 	public static final String PROP_UCMSNOTIFYUNPUBLISH_URI = "ucmsnotifyunpublish";
@@ -58,10 +60,14 @@ public class HttpUCMSClient {
 	public HttpResponse executeRequest(String strResourceURL) throws ClientProtocolException, IOException{
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpGet httpGet = null;
-		if(strResourceURL.toLowerCase().contains(UCMS_DOMAIN_IDENTIFIER)){
-			System.out.println("Download from UCMS Domain");
+		if(strResourceURL.toLowerCase().contains(UCMS_DOMAIN_IDENTIFIER)){			
+			System.out.println("Download from UCMS Domain");			
 			UCMSServiceHelper ucmService = new UCMSServiceHelper();
 			httpGet = ucmService.createUCMSHeader(strResourceURL,UCMS_DOMAIN_IDENTIFIER);
+		}else if(strResourceURL.toLowerCase().contains(UCMS_DOMAIN_IDENTIFIER1)){			
+			System.out.println("Download from New UCMS Domain");			
+			UCMSServiceHelper ucmService = new UCMSServiceHelper();
+			httpGet = ucmService.createUCMSHeader(strResourceURL,UCMS_DOMAIN_IDENTIFIER1);
 		}else{
 			System.out.println("Download from Public Site");
 			httpGet = new HttpGet(strResourceURL);
@@ -237,23 +243,35 @@ public class HttpUCMSClient {
 		return channelNodeRef;
 	}	
 	
-	public HttpResponse notifyUCMSMediaDownload(String ucmsID) throws JSONException, IOException{
+	public HttpResponse notifyUCMSMediaDownload(String ucmsID, String hostURL) throws JSONException, IOException{
 		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));
-		String hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
+		//String hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
 		String hostURI = props.getProperty(PROP_UCMSNOTIFYDOWNLOAD_URI).trim();		
 		String URL	= hostURL+ucmsID+hostURI;
 		System.out.println("UCMS Create Asset Notify URL:"+URL);		
 		HttpClient httpclient = new DefaultHttpClient();
 		UCMSServiceHelper ucmService = new UCMSServiceHelper();
-		HttpPost httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);			
+		HttpPost httpPost = null;
+		if(hostURL.contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER1)){
+			httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER1);
+		}else{
+			httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);
+		}
+					
 		response = httpclient.execute(httpPost);			
 		return response;  
 	}
-	public HttpResponse notifyUCMSMediaPublish(String ucmsID, String provfiderID, double duration, boolean isKapx, String pubError) throws IOException, JSONException{
+	public HttpResponse notifyUCMSMediaPublish(String ucmsID, String provfiderID, double duration, boolean isKapx, String pubError, String strResourceURL) throws IOException, JSONException{
 		System.out.println("BVC ID from Notify Method:"+provfiderID);
 		System.out.println("Duration:"+duration);
-		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));		
-		String hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
+		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));
+		String hostURL = "";		
+		if(strResourceURL.contains(UCMS_DOMAIN_IDENTIFIER1)){
+			hostURL = props.getProperty(PROP_UCMSNOTIFY_URL_NEW).trim();
+		}else{
+			hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
+		}
+		
 		String hostURI = props.getProperty(PROP_UCMSNOTIFYPUBLISH_URI).trim();		
 		String URL	= hostURL+ucmsID+hostURI;
 		System.out.println("UCMS PUblish Asset Notify URL:"+URL);		
@@ -279,15 +297,26 @@ public class HttpUCMSClient {
 		}
 		HttpClient httpclient = new DefaultHttpClient();
 		UCMSServiceHelper ucmService = new UCMSServiceHelper();
-		HttpPost httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);		
+		HttpPost httpPost = null;
+		if(hostURL.contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER1)){
+			httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER1);
+		}else{
+			httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);
+		}
 		httpPost.setEntity(entityNotify);			
 		response = httpclient.execute(httpPost);
 		return response;  
 	}
 	
-	public HttpResponse notifyUCMSMediaUnPublish(String ucmsID, String message, String pubError) throws IOException, JSONException{		
-		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));		
-		String hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
+	public HttpResponse notifyUCMSMediaUnPublish(String ucmsID, String message, String pubError, String strResourceURL) throws IOException, JSONException{		
+		props.load(this.getClass().getResourceAsStream("/com/kapx/ucms/pace.properties"));	
+		String hostURL = "";
+		if(strResourceURL.contains(UCMS_DOMAIN_IDENTIFIER1)){
+			hostURL = props.getProperty(PROP_UCMSNOTIFY_URL_NEW).trim();
+		}else{
+			hostURL = props.getProperty(PROP_UCMSNOTIFY_URL).trim();
+		}
+		
 		String hostURI = props.getProperty(PROP_UCMSNOTIFYUNPUBLISH_URI).trim();		
 		String URL	= hostURL+ucmsID+hostURI;
 		System.out.println("UCMS UnPUblish Asset Notify URL:"+URL);		
@@ -304,7 +333,13 @@ public class HttpUCMSClient {
 		
 		HttpClient httpclient = new DefaultHttpClient();
 		UCMSServiceHelper ucmService = new UCMSServiceHelper();
-		HttpPost httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);		
+		HttpPost httpPost = null;
+		if(hostURL.contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER1)){
+			httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER1);
+		}else{
+			httpPost = ucmService.createHttpPostUCMSHeader(URL,UCMS_DOMAIN_IDENTIFIER);
+		}
+				
 		httpPost.setEntity(entityNotify);			
 		response = httpclient.execute(httpPost);
 		return response;  

@@ -177,22 +177,28 @@ public class CreateUCMAsset extends DeclarativeWebScript {
 	        					new MediaDownloadHelper(strResourceURL,getNodeService(), getContentService(), assetRef, registry);	        			
 	        			if(strResourceURL.toLowerCase().contains(HttpUCMSClient.AMAZON_DOMAIN_IDENTIFIER) && strResourceType.equalsIgnoreCase("private")){
 	        				mediaDownloadHelper.downloadFromS3(ifLargeFile,strResourceType);	        				
-	        			}else if(strResourceURL.toLowerCase().contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER)){	        				
+	        			}else if(strResourceURL.toLowerCase().contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER) || strResourceURL.toLowerCase().contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER1)){	        				
 	        				mediaDownloadHelper.downloadFromURL(ifLargeFile);	        				
 	        			}else{
-	        				System.out.println("Download Media from Public Site Else block");
-	        				//throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR,"Error - Unknown host to download media from:"+strResourceURL);
+	        				System.out.println("Download Media from Public Site Else block");	        				
 	        				mediaDownloadHelper.downloadFromURL(ifLargeFile);
 	        			}
 	        			
-	        			HttpUCMSClient ucmsClient = new HttpUCMSClient();	        			
-	        			HttpResponse httpResponse = ucmsClient.notifyUCMSMediaDownload(strUCMSID);
+	        			HttpUCMSClient ucmsClient = new HttpUCMSClient();
+	        			String hostURL = "";
+	        			if(strResourceURL.contains(HttpUCMSClient.UCMS_DOMAIN_IDENTIFIER1)){
+	        				hostURL = props.getProperty(HttpUCMSClient.PROP_UCMSNOTIFY_URL_NEW).trim();
+	        			}else{
+	        				hostURL = props.getProperty(HttpUCMSClient.PROP_UCMSNOTIFY_URL).trim();
+	        			}
+	        			HttpResponse httpResponse = ucmsClient.notifyUCMSMediaDownload(strUCMSID,hostURL);
 	        			System.out.println("Create Notify Response:"+httpResponse.getStatusLine().getStatusCode());
 	        			if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 	        	            System.out.println("UCMS Notification Successful");		                        
 	        	        } else{
 	        	        	System.out.println("UCMS Notification failed."+httpResponse.getStatusLine().getReasonPhrase());
 	        			}
+	        			
 	                }catch (Exception e){
 	                     throw new AlfrescoRuntimeException(e.getLocalizedMessage());
 	                 }       	

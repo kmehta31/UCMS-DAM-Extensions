@@ -122,6 +122,5 @@
 				<fileset dir="${bin.dir}" includes="org/**" />
 				<zipfileset dir="${web.dir}/META-INF" excludes="*.zip" prefix="META-INF" />				
 			</jar>
-	</target>
-	
+	</target>	
 </project>

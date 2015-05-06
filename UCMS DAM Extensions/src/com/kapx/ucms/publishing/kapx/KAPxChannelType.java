@@ -47,6 +47,7 @@ import com.kapx.ucms.HttpUCMSClient;
 import com.kapx.ucms.model.BrightcovePublishingModel;
 import com.kapx.ucms.model.KAPxPublishingModel;
 import com.kapx.ucms.model.UCMSPublishingModel;
+import com.mysql.jdbc.StringUtils;
 
 /**
  * Channel definition for publishing/unpublishing Video content to KAPx Server
@@ -123,6 +124,10 @@ public class KAPxChannelType extends AbstractChannelType
     	NodeService nodeService = getNodeService();       	
         NodeRef publishNodeRef	= getPublishingNodeRef(nodeToPublish,nodeService);
         String strUCMSID = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_ID);
+        String strResourceURL = (String) nodeService.getProperty(publishNodeRef, UCMSPublishingModel.PROPERTY_UCM_RESOURCEURL);
+        if(strResourceURL==null){
+        	strResourceURL = "";
+        }
         boolean isError = false;
     	String strError = "";
         //There is no Publish for KAPx during Update. Just Notification
@@ -136,10 +141,10 @@ public class KAPxChannelType extends AbstractChannelType
 	        	HttpResponse httpResponse = null;
 	        	if(KAPxSlideDeckURL.length()>0){
 	        		//Notify UCMS for Publish Successful for KAPx
-	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,KAPxSlideDeckURL,KAPxSlideCount,true,"");	        		
+	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,KAPxSlideDeckURL,KAPxSlideCount,true,"",strResourceURL);	        		
 	        	}else{
 	        		//Notify UCMS for Publish Failure for KAPx	        		
-	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,true,publishError);
+	        		httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,true,publishError,strResourceURL);
 	        	}	
 				
 				if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
@@ -213,7 +218,7 @@ public class KAPxChannelType extends AbstractChannelType
 					HttpUCMSClient ucmsClient = new HttpUCMSClient();
 	    			try {
 	    				//Notify UCMS App for Publishing Error
-						HttpResponse httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,true,strError);
+						HttpResponse httpResponse = ucmsClient.notifyUCMSMediaPublish(strUCMSID,"",0,true,strError,strResourceURL);
 						if(httpResponse.getStatusLine().getStatusCode() == 204){        	        		        	
 		    	            System.out.println("UCMS Notification for Publish Error Successful");		                        
 		    	        } else{

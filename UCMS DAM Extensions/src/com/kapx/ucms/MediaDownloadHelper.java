@@ -153,7 +153,7 @@ public class MediaDownloadHelper {
 	public void downloadFromURL(boolean ifLargeFile) throws IllegalStateException, IOException, SignatureException{		
 		System.out.println("Media Download via URL..");	        				
 		HttpUCMSClient ucmsClient = new HttpUCMSClient();		
-        HttpResponse response = ucmsClient.executeRequest(strResourceURL);;
+        HttpResponse response = ucmsClient.executeRequest(strResourceURL);
         System.out.println("Response Status:"+response.getStatusLine().getStatusCode());                     
         if(response.getStatusLine().getStatusCode() == 200){       	
         	String contentType = response.getEntity().getContentType().getValue();
